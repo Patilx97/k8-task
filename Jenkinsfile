@@ -2,37 +2,48 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "stark303/k8-app"
+        IMAGE_NAME = "stark303/k8-app"
+        BUILD_TAG = "${BUILD_NUMBER}"  // Jenkins build number as tag
         LATEST_TAG = "latest"
-        BUILD_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number as tag
+        KUBE_DEPLOYMENT = "k8-app"
+        NAMESPACE = "default"
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo.git'
+                git 'https://github.com/Patilx97/k8-task.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE:$BUILD_TAG ."
-                sh "docker tag $DOCKER_IMAGE:$BUILD_TAG $DOCKER_IMAGE:$LATEST_TAG"
+                sh """
+                echo "Building Docker image..."
+                docker build -t $IMAGE_NAME:$BUILD_TAG .
+                docker tag $IMAGE_NAME:$BUILD_TAG $IMAGE_NAME:$LATEST_TAG
+                """
             }
         }
 
         stage('Push Image to DockerHub') {
             steps {
                 withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                    sh "docker push $DOCKER_IMAGE:$BUILD_TAG"
-                    sh "docker push $DOCKER_IMAGE:$LATEST_TAG"
+                    sh """
+                    echo "Pushing Docker image..."
+                    docker push $IMAGE_NAME:$BUILD_TAG
+                    docker push $IMAGE_NAME:$LATEST_TAG
+                    """
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh "kubectl set image deployment/k8-app k8-app=$DOCKER_IMAGE:$LATEST_TAG --namespace=default"
+                sh """
+                echo "Deploying to Kubernetes..."
+                kubectl set image deployment/$KUBE_DEPLOYMENT k8-app=$IMAGE_NAME:$LATEST_TAG --namespace=$NAMESPACE
+                """
             }
         }
     }
