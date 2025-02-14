@@ -37,6 +37,11 @@ pipeline {
                 }
             }
         }
+        stage('Test Kubectl Access') {
+            steps {
+                sh 'kubectl get nodes'
+            }
+        }
 
         stage('Deploy to Kubernetes') {
             steps {
