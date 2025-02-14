@@ -40,12 +40,12 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withEnv(["KUBECONFIG=/home/ubuntu/.kube/config"]) {
-                    sh """
+                withEnv(["KUBECONFIG=/var/lib/jenkins/.kube/config"]) {
+                    sh '''
                     echo "Deploying to Kubernetes..."
                     kubectl get nodes
                     kubectl set image deployment/k8-app k8-app=stark303/k8-app:latest --namespace=default
-                    """
+                    '''
                 }   
             }
         }
