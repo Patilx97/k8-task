@@ -37,18 +37,15 @@ pipeline {
                 }
             }
         }
-        stage('Test Kubectl Access') {
-            steps {
-                sh 'kubectl get nodes'
-            }
-        }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh """
-                echo "Deploying to Kubernetes..."
-                kubectl set image deployment/$KUBE_DEPLOYMENT k8-app=$IMAGE_NAME:$LATEST_TAG --namespace=$NAMESPACE
-                """
+                withEnv(["KUBECONFIG=/home/ubuntu/.kube/config"]) {
+                    sh """
+                    echo "Deploying to Kubernetes..."
+                    kubectl get nodes
+                    kubectl set image deployment/k8-app k8-app=stark303/k8-app:latest --namespace=default
+                    """
             }
         }
     }
