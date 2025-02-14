@@ -45,7 +45,7 @@ pipeline {
                     echo "Deploying to Kubernetes..."
                     kubectl get nodes
                     kubectl set image deployment/k8-app k8-app=stark303/k8-app:latest --namespace=default
-                    """
+                 }  """
             }
         }
     }
