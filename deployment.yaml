@@ -20,5 +20,6 @@ spec:
       containers:
         - name: k8-app
           image: stark303/k8-app:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
