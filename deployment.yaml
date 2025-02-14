@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: k8-app
+  template:
+    metadata:
+      labels:
+        app: k8-app
+    spec:
+      containers:
+        - name: k8-app
+          image: stark303/k8-app:latest
+          ports:
+            - containerPort: 80
